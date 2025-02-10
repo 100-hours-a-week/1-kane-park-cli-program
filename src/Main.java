@@ -140,6 +140,20 @@ public class Main {
 
             totalPrice += resultPrice;
 
+            // 음료 제작을 별도 스레드에서 실행
+            Thread makingThread = new Thread(() -> {
+                System.out.println("\n====================");
+                System.out.println("[주문 처리 중...]");
+                System.out.println("주문 받은 메뉴: " + selectedDrink.name);
+                selectedDrink.making();
+                if (shot == 1) {
+                    System.out.println("샷을 추가하는 중입니다...");
+                }
+                System.out.println("주문하신 메뉴가 준비되었습니다!");
+                System.out.println("====================");
+            });
+            makingThread.start();
+
             // 추가 주문 여부 확인
             System.out.print("추가 주문을 하시겠습니까? (1: 예, 2: 아니요): ");
             int moreOrder = Integer.parseInt(scanner.nextLine());
@@ -147,15 +161,11 @@ public class Main {
                 ordering = false;
             }
 
-            System.out.println("\n====================");
-            System.out.println("[주문 처리 중...]");
-            System.out.println("주문 받은 메뉴: " + selectedDrink.name);
-            selectedDrink.making();
-            if (shot == 1) {
-                System.out.println("샷을 추가하는 중입니다...");
+            try {
+                makingThread.join(); // 음료 제작이 완료될 때까지 대기
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            System.out.println("주문하신 메뉴가 준비되었습니다!");
-            System.out.println("====================\n");
         }
 
         System.out.println("총 주문 금액: " + totalPrice + "원");

@@ -16,7 +16,7 @@ class Drink {
 
     @Override
     public String toString() {
-        return name + " - " + price;
+        return name + " - " + price + "원";
     }
 }
 
@@ -45,10 +45,6 @@ class Tea extends Drink {
 class Espresso extends Coffee {
     public Espresso(String name, int price) {
         super(name, price);
-    }
-
-    public void making() {
-        super.making();
     }
 }
 
@@ -96,10 +92,10 @@ class IceTea extends Tea {
     }
 }
 
-
 public class Main {
     public static void main(String[] args) {
-        // 메뉴 표시
+        Scanner scanner = new Scanner(System.in);
+
         Drink[] menu = {
                 new Espresso("Kenya Espresso", 3000),
                 new Americano("Kenya Americano", 3000),
@@ -113,40 +109,57 @@ public class Main {
                 new IceTea("Ice Chamomile", 4500)
         };
 
-        System.out.println("========MENU========");
-        for (int i = 0; i < menu.length; i++) {
-            System.out.println((i + 1) + ". " + menu[i]);
-        }
+        boolean ordering = true;
+        int totalPrice = 0;
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("원하는 메뉴 번호를 선택하세요: ");
-        int choice = scanner.nextInt();
-        System.out.println("====================");
+        while (ordering) {
+            System.out.println("========MENU========");
+            for (int i = 0; i < menu.length; i++) {
+                System.out.println((i + 1) + ". " + menu[i]);
+            }
+            System.out.print("원하는 메뉴 번호를 선택하세요: ");
 
-        // 주문 받은 메뉴 표기
-        if (choice > 0 && choice <= menu.length) {
+            int choice;
+            while (true) {
+                try {
+                    choice = Integer.parseInt(scanner.nextLine());
+                    if (choice > 0 && choice <= menu.length) break;
+                    else System.out.println("올바른 번호를 입력하세요.");
+                } catch (NumberFormatException e) {
+                    System.out.println("숫자를 입력하세요.");
+                }
+            }
+
             Drink selectedDrink = menu[choice - 1];
-            int lastPrice = selectedDrink.price;
+            int resultPrice = selectedDrink.price;
 
             // 샷 추가 여부 확인
             System.out.print("샷을 추가하시겠습니까? (1: 예, 2: 아니요): ");
-            int shot = scanner.nextInt();
-            if (shot == 1) {
-                lastPrice += 500; // 가격 추가
-            }
-            System.out.println("====================\n");
+            int shot = Integer.parseInt(scanner.nextLine());
+            if (shot == 1) resultPrice += 500;
 
+            totalPrice += resultPrice;
+
+            // 추가 주문 여부 확인
+            System.out.print("추가 주문을 하시겠습니까? (1: 예, 2: 아니요): ");
+            int moreOrder = Integer.parseInt(scanner.nextLine());
+            if (moreOrder != 1) {
+                ordering = false;
+            }
+
+            System.out.println("\n====================");
+            System.out.println("[주문 처리 중...]");
             System.out.println("주문 받은 메뉴: " + selectedDrink.name);
             selectedDrink.making();
             if (shot == 1) {
                 System.out.println("샷을 추가하는 중입니다...");
             }
             System.out.println("주문하신 메뉴가 준비되었습니다!");
-            System.out.println("가격은 " + lastPrice + "원 입니다");
-        } else {
-            System.out.println("잘못된 선택입니다. 프로그램을 종료합니다.");
+            System.out.println("====================\n");
         }
 
+        System.out.println("총 주문 금액: " + totalPrice + "원");
+        System.out.println("주문이 완료되었습니다.");
         scanner.close();
     }
 }
